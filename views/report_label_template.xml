@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!-- creacion del template de etiquetas amarillas para la so -->
+    <template id="report_custom_2x1_document">
+        <t t-call="web.basic_layout">
+            <div class="page" style="margin: 0; padding: 2mm; width: 100%; height: 100%; box-sizing: border-box; font-family: sans-serif;">
+                
+                <!-- se extrae el name de la orden -->
+                <t t-set="so_name" t-value="o.sale_id.name if o.sale_id else o.origin"/> 
+
+                <div style="text-align: center; border-bottom: 2px solid black; margin-bottom: 5px; padding-bottom: 2px;">
+                    <span style="font-size: 12px;">Orden de Venta</span><br/>
+                    <strong style="font-size: 22px;" t-esc="so_name"/>
+                </div>
+
+                <div style="font-size: 14px; margin-bottom: 5px; text-align: center;">
+                    <strong>Traslado:</strong> <span t-field="o.name"/><br/>
+                </div>
+
+                <div style="text-align: center; margin-top: 5px;">
+                    <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', o.name, 400, 80)" 
+                         style="width: 95%; max-height: 45px;" alt="Código de Barras"/>
+                </div>
+
+            </div>
+        </t>
+    </template>
+
+    <template id="report_custom_2x1">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="wb_printer_IoT.report_custom_2x1_document"/>
+            </t>
+        </t>
+    </template>
+</odoo>

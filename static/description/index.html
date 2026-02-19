@@ -1,0 +1,49 @@
+<section class="container" style="margin-top: 2rem; margin-bottom: 2rem;">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h2 class="display-4" style="color: #017E84; font-weight: bold;">WB Printer IoT Integration</h2>
+            <h5 class="text-muted">Impresión directa de Etiquetas 2x1 y Guías Adjuntas 4x8</h5>
+            <hr style="width: 100px; border-top: 3px solid #017E84; margin: 20px auto;">
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 2rem;">
+        <div class="col-md-8 offset-md-2 text-center">
+            <p style="font-size: 1.1rem; color: #555;">
+                Este módulo extiende las capacidades del módulo de Inventario y Código de Barras de Odoo para integrarse fluidamente con la <strong>Caja IoT (IoT Box)</strong>. Permite enrutar las impresiones a impresoras térmicas locales por usuario sin abrir el diálogo del navegador.
+            </p>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 3rem;">
+        <div class="col-md-6 mb-4">
+            <div class="card" style="border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px;">
+                <div class="card-body">
+                    <h4 class="card-title" style="color: #017E84;"><i class="fa fa-print"></i> Etiquetas 4x2 Térmicas</h4>
+                    <p class="card-text">
+                        Plantillas QWeb diseñadas matemáticamente para impresoras térmicas a 203 DPI, asegurando que los códigos de barras y textos encajen perfectamente en 4x2 pulgadas sin bordes blancos.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card" style="border: none; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px;">
+                <div class="card-body">
+                    <h4 class="card-title" style="color: #017E84;"><i class="fa fa-file-pdf-o"></i> Interceptor de Adjuntos (4x8)</h4>
+                    <p class="card-text">
+                        Convierte el PDF adjunto de las guías de transporte en un 'Reporte Activo' para que Odoo IoT lo reconozca. Evita descargas manuales e imprime directamente en formato 4x8.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top: 2rem;">
+        <div class="col-12">
+            <div class="alert alert-info" role="alert">
+                <strong><i class="fa fa-lightbulb-o"></i> Memoria por Usuario:</strong> Al integrarse con <code>ir.actions.report</code>, el módulo utiliza la memoria caché del navegador. Odoo preguntará por la impresora solo la primera vez, agilizando el flujo de trabajo en las mesas de empaque.
+            </div>
+        </div>
+    </div>
+</section>
