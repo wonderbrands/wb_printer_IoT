@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="report_custom_2x1_document">
-        <div class="page" style="margin: 0; padding: 1mm; width: 49mm; height: 23mm; background-color: white; color: black; font-family: Arial, sans-serif; overflow: hidden; box-sizing: border-box;">
+        <div class="page" style="margin: 0; padding: 0; width: 100%; height: 100%; background-color: white; color: black; font-family: sans-serif; overflow: hidden;">
             
-            <div style="text-align: center; margin-top: 2mm;">
+            <div style="text-align: center; padding-top: 2mm;">
                 <strong style="font-size: 14px;">¡HOLA HONEYWELL!</strong>
             </div>
             
-            <div style="text-align: center; margin-top: 2mm; font-size: 12px;">
+            <div style="text-align: center; padding-top: 2mm; font-size: 12px;">
                 <span t-field="o.name"/>
             </div>
 
