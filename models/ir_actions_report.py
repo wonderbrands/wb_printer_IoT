@@ -9,7 +9,7 @@ class IrActionsReport(models.Model):
     def _render_qweb_pdf(self, report_ref, res_ids=None, data=None):
         report = self._get_report(report_ref)
         
-        #4x8 dummy
+        #4x6 dummy
         if report.report_name == 'wb_printer_IoT.report_attachment_dummy':
             if not res_ids:
                 raise UserError("No se ha seleccionado ningún traslado.")
@@ -31,7 +31,7 @@ class IrActionsReport(models.Model):
             ], limit=1, order='create_date desc')
             
             if not attachment:
-                raise UserError(f"No hay ninguna guía PDF de 4x8 adjunta en el traslado {picking.name}.")
+                raise UserError(f"No hay ninguna guía PDF de 4x6 adjunta en el traslado {picking.name}.")
             
             '''
             

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<!-- definicion de tipos y tamanios de formatos para etiquetas -->
     <record id="paperformat_label_2x1" model="report.paperformat">
         <field name="name">Etiqueta Termica 2x1</field>
         <field name="default" eval="True"/>
@@ -8,21 +7,21 @@
         <field name="page_width">51</field>  
         <field name="page_height">25</field>  
         <field name="orientation">Portrait</field>
-        <field name="margin_top">1</field>
-        <field name="margin_bottom">1</field>
-        <field name="margin_left">1</field>
-        <field name="margin_right">1</field>
+        <field name="margin_top">0</field>
+        <field name="margin_bottom">0</field>
+        <field name="margin_left">0</field>
+        <field name="margin_right">0</field>
         <field name="header_line" eval="False"/>
         <field name="header_spacing">0</field>
         <field name="dpi">203</field>
     </record>
 
-    <record id="paperformat_label_4x8" model="report.paperformat">
-        <field name="name">Etiqueta Termica 4x8 (Adjuntos)</field>
+    <record id="paperformat_label_4x6" model="report.paperformat">
+        <field name="name">Etiqueta Termica 4x6 (Adjuntos)</field>
         <field name="default" eval="True"/>
         <field name="format">custom</field>
         <field name="page_width">102</field>  
-        <field name="page_height">51</field> 
+        <field name="page_height">152</field> 
         <field name="orientation">Portrait</field>
         <field name="margin_top">0</field>
         <field name="margin_bottom">0</field>
