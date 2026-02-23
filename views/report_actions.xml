@@ -1,23 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- definicion acciones que se pueden hacer sobre los formatos paperformat_label_2x1 y paperformat_label_4x6 -->
 <odoo>
     <record id="action_report_custom_2x1" model="ir.actions.report">
         <field name="name">Imprimir Etiqueta Amarilla 2x1</field>
-        <field name="model">stock.picking</field> <field name="report_type">qweb-pdf</field>
+        <field name="model">sale.order</field> 
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">wb_printer_IoT.report_custom_2x1</field>
         <field name="report_file">wb_printer_IoT.report_custom_2x1</field>
         <field name="paperformat_id" ref="wb_printer_IoT.paperformat_label_2x1"/>
-        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
     </record>
 
-    <record id="action_report_print_attachment_4x6" model="ir.actions.report">
-        <field name="name">Imprimir Guía Adjunta 4x6</field>
-        <field name="model">stock.picking</field> <field name="report_type">qweb-pdf</field>
+    <record id="action_report_print_attachment_4x8" model="ir.actions.report">
+        <field name="name">Imprimir Guía Adjunta 4x8</field>
+        <field name="model">sale.order</field> 
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">wb_printer_IoT.report_attachment_dummy</field> 
         <field name="report_file">wb_printer_IoT.report_attachment_dummy</field>
-        <field name="paperformat_id" ref="wb_printer_IoT.paperformat_label_4x6"/>
-        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="paperformat_id" ref="wb_printer_IoT.paperformat_label_4x8"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_zpl_backup" model="ir.actions.report">
+        <field name="name">Imprimir Etiqueta ZPL (Respaldo)</field>
+        <field name="model">sale.order</field> 
+        <field name="report_type">qweb-pdf</field> <field name="report_name">wb_printer_IoT.report_zpl_backup</field> 
+        <field name="report_file">wb_printer_IoT.report_zpl_backup</field>
+        <field name="paperformat_id" ref="wb_printer_IoT.paperformat_label_4x8"/> 
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
     </record>
 </odoo>

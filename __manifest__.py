@@ -4,7 +4,7 @@
     'summary': 'Integración de impresión IoT para etiquetas y adjuntos',
     'author': 'Sergio Guerrero',
     'category': 'Inventory/Barcode',
-    'depends': ['base', 'stock', 'stock_barcode', 'iot'],
+    'depends': ['base', 'stock', 'stock_barcode', 'iot', 'sale'],
     'data': [
         'views/report_paperformats.xml',
         'views/report_actions.xml',
