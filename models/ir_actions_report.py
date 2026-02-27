@@ -11,10 +11,9 @@ class IrActionsReport(models.Model):
         report = self._get_report(report_ref)
         
         # ---------------------------------------------------------
-        # 1. REPORTE DUMMY 4x8 (El que imprime los PDFs fusionados)
+        # Etqiuetas 4x8 adjuntas en modelo nuevo de guías
         # ---------------------------------------------------------
         if report.report_name == 'wb_printer_IoT.report_attachment_dummy':
-            # ... (Tu código actual para el PDF múltiple se queda exactamente igual) ...
             if not res_ids:
                 raise UserError("No se ha seleccionado ninguna Orden de Venta.")
             
@@ -55,7 +54,7 @@ class IrActionsReport(models.Model):
             raise UserError("Los archivos adjuntos no contienen formatos válidos (PDF/ZPL).")
 
         # ---------------------------------------------------------
-        # 2. NUEVO REPORTE ZPL DE RESPALDO (Etiqueta de Secuencia 4x6)
+        # ZPL de respaldo
         # ---------------------------------------------------------
         elif report.report_name == 'wb_printer_IoT.report_zpl_backup':
             if not res_ids:
@@ -66,7 +65,7 @@ class IrActionsReport(models.Model):
             if not order.exists():
                 raise UserError("No se encontró la Orden de Venta.")
 
-            # Buscamos cuántas guías tiene para generar ese mismo número de etiquetas
+            #Guias adjuntas en modelo sale.order.attachment
             so_attachments = self.env['sale.order.attachment'].search([
                 ('so_id', '=', order.id)
             ], order='sequence_number asc')
@@ -75,25 +74,21 @@ class IrActionsReport(models.Model):
             if total_labels == 0:
                 raise UserError(f"La orden {order.name} aún no tiene guías adjuntas.")
 
-            # Variables para llenar la plantilla
             so_name = order.name or ''
             create_date = order.date_order.strftime('%Y-%m-%d') if order.date_order else ''
             team = order.team_id.name if order.team_id else 'Sin Equipo'
             
-            # Buscamos el primer traslado asociado para sacar el nombre del OUT
             picking = self.env['stock.picking'].search([('sale_id', '=', order.id)], limit=1)
-            out_name = picking.name if picking else 'Sin Traslado'
             almacen = picking.picking_type_id.warehouse_id.name if picking and picking.picking_type_id else 'Almacén Principal'
-            carrier = order.carrier_id.name if order.carrier_id else 'Sin Transportista'
             
             full_zpl_code = ""
 
-            # Generamos un bloque ZPL por cada anexo encontrado
+            #Bloque ZPL por
             for attach in so_attachments:
-                # Extraemos S00030/1, S00030/2, etc.
+                #Extraemos S00030/1, S00030/2, etc.
                 display_name = attach.display_name_custom or f"{so_name}/{attach.sequence_number}"
                 
-                # Inyectamos las variables en tu plantilla ZPL
+                #Inyectamos las variables plantilla ZPL
                 zpl_code = f"""
                 ^XA
                 ^CI28
@@ -105,11 +100,9 @@ class IrActionsReport(models.Model):
                 ^FO50,225^FDFecha: {create_date}^FS
                 ^CF0,30
                 ^FO50,290^FDEquipo: {team}^FS
-                ^FO50,330^FDTransportista: {carrier}^FS
                 ^FO50,370^GB700,3,3^FS
 
                 ^CFA,30
-                ^FO50,430^FDOUT: {out_name}^FS
                 ^FO50,480^FD{almacen}^FS
                 ^FO50,530^FDGuia: {display_name}^FS
                 ^FO50,630^GB700,3,3^FS
@@ -123,7 +116,55 @@ class IrActionsReport(models.Model):
                 """
                 full_zpl_code += zpl_code
 
-            # Retornamos todo el código concatenado como texto crudo
+            #Retornamos como raw
+            return full_zpl_code.encode('utf-8'), 'text'
+
+        # ---------------------------------------------------------
+        # Etiquetas 2x1 
+        # ---------------------------------------------------------
+        elif report.report_name == 'wb_printer_IoT.report_custom_2x1':
+            if not res_ids:
+                raise UserError("No se ha seleccionado ninguna Orden de Venta.")
+            
+            order_id = res_ids[0]
+            order = self.env['sale.order'].browse(order_id)
+            if not order.exists():
+                raise UserError("No se encontró la Orden de Venta.")
+
+            so_attachments = self.env['sale.order.attachment'].search([
+                ('so_id', '=', order.id)
+            ], order='sequence_number asc')
+            
+            full_zpl_code = ""
+            
+            if so_attachments:
+                # Si hay adjuntos, creamos una etiqueta 2x1 por cada uno
+                for attach in so_attachments:
+                    display_name = attach.display_name_custom or f"{order.name}/{attach.sequence_number}"
+                    
+                    zpl_code = f"""^XA
+                                ^PW400
+                                ^LL200
+                                ^CFA,30
+                                ^FO0,30^FB400,1,0,C,0^FD{display_name}^FS
+                                ^BY2,2,80
+                                ^FO60,80^BCN,80,Y,N,N^FD{display_name}^FS
+                                ^XZ
+                                """
+                    full_zpl_code += zpl_code
+            else:
+                # Si NO hay adjuntos, sacamos una de "Sin Guias"
+                zpl_code = f"""^XA
+                            ^PW400
+                            ^LL200
+                            ^CFA,30
+                            ^FO0,50^FB400,1,0,C,0^FDSin Guias^FS
+                            ^CFA,40
+                            ^FO0,110^FB400,1,0,C,0^FD{order.name}^FS
+                            ^XZ
+                            """
+                full_zpl_code += zpl_code
+
             return full_zpl_code.encode('utf-8'), 'text'
 
         # Si no es ninguno de nuestros reportes especiales, flujo normal
