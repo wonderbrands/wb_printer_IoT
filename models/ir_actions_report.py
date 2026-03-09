@@ -128,6 +128,7 @@ class IrActionsReport(models.Model):
             
             order_id = res_ids[0]
             order = self.env['sale.order'].browse(order_id)
+            team_name = order.team_id.name if order.team_id else "Sin Equipo"
             if not order.exists():
                 raise UserError("No se encontró la Orden de Venta.")
 
@@ -139,6 +140,7 @@ class IrActionsReport(models.Model):
             
             if so_attachments:
                 # Si hay adjuntos, creamos una etiqueta 2x1 por cada uno
+                len_so_attachments = len(so_attachments)
                 for attach in so_attachments:
                     display_name = attach.display_name_custom or f"{order.name}/{attach.sequence_number}"
                     
@@ -146,9 +148,11 @@ class IrActionsReport(models.Model):
                                 ^PW400
                                 ^LL200
                                 ^CFA,30
-                                ^FO0,30^FB400,1,0,C,0^FD{display_name}^FS
-                                ^BY2,2,80
-                                ^FO60,80^BCN,80,Y,N,N^FD{display_name}^FS
+                                ^FO0,20^FB400,1,0,C,0^FD{display_name} de {len_so_attachments}^FS
+                                ^CFA,20
+                                ^FO0,60^FB400,1,0,C,0^FD{team_name}^FS
+                                ^BY2,2,70
+                                ^FO60,90^BCN,90,N,N,N^FD{display_name}^FS
                                 ^XZ
                                 """
                     full_zpl_code += zpl_code
