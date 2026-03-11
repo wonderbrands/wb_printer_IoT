@@ -75,6 +75,7 @@ class IrActionsReport(models.Model):
                 raise UserError(f"La orden {order.name} aún no tiene guías adjuntas.")
 
             so_name = order.name or ''
+            marketplace = order.channel or ''
             create_date = order.date_order.strftime('%Y-%m-%d') if order.date_order else ''
             team = order.team_id.name if order.team_id else 'Sin Equipo'
             
@@ -97,21 +98,20 @@ class IrActionsReport(models.Model):
                 ^CF0,55
                 ^FO50,160^FDOrden: {so_name}^FS
                 ^CF0,50
-                ^FO50,225^FDFecha: {create_date}^FS
+                ^FO50,225^FDFecha de orden: {create_date}^FS
                 ^CF0,30
-                ^FO50,290^FDEquipo: {team}^FS
+                ^FO50,290^FDMarketplace: {marketplace}^FS
                 ^FO50,370^GB700,3,3^FS
 
                 ^CFA,30
-                ^FO50,480^FD{almacen}^FS
                 ^FO50,530^FDGuia: {display_name}^FS
                 ^FO50,630^GB700,3,3^FS
 
                 ^FX Codigo de barras gigante con la secuencia (S00030/1)
-                ^BY4,2,200
-                ^FO50,660^BC^FD{display_name}^FS
+                ^BY4,2,250
+                ^FO30,660^BC^FD{display_name}^FS
                 ^CF0,40
-                ^FO50,900^FDEtiqueta {attach.sequence_number} de {total_labels}^FS
+                ^FO50,1000^FDEtiqueta {attach.sequence_number} de {total_labels}^FS
                 ^XZ
                 """
                 full_zpl_code += zpl_code
@@ -150,7 +150,7 @@ class IrActionsReport(models.Model):
                                 ^CFA,30
                                 ^FO0,20^FB400,1,0,C,0^FD{display_name} de {len_so_attachments}^FS
                                 ^CFA,20
-                                ^FO0,60^FB400,1,0,C,0^FD{team_name}^FS
+                                ^FO0,60^FB400,1,0,C,0^FD{marketplace}^FS
                                 ^BY2,2,70
                                 ^FO60,90^BCN,90,N,N,N^FD{display_name}^FS
                                 ^XZ
