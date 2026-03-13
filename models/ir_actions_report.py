@@ -128,6 +128,7 @@ class IrActionsReport(models.Model):
             
             order_id = res_ids[0]
             order = self.env['sale.order'].browse(order_id)
+            marketplace = order.channel or ''
             team_name = order.team_id.name if order.team_id else "Sin Equipo"
             if not order.exists():
                 raise UserError("No se encontró la Orden de Venta.")
