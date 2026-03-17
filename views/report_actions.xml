@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="action_report_custom_2x1" model="ir.actions.report">
-        <field name="name">Imprimir Etiqueta Amarilla 2x1</field>
+        <field name="name">Data - Imprimir Etiqueta Amarilla 2x1</field>
         <field name="model">sale.order</field> 
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">wb_printer_IoT.report_custom_2x1</field>
@@ -12,7 +12,7 @@
     </record>
 
     <record id="action_report_print_attachment_4x8" model="ir.actions.report">
-        <field name="name">Imprimir Guía Adjunta 4x8</field>
+        <field name="name">Data - Imprimir Guía Adjunta 4x8</field>
         <field name="model">sale.order</field> 
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">wb_printer_IoT.report_attachment_dummy</field> 
@@ -23,7 +23,7 @@
     </record>
 
     <record id="action_report_zpl_backup" model="ir.actions.report">
-        <field name="name">Imprimir Etiqueta ZPL (Respaldo)</field>
+        <field name="name">Data - Imprimir Etiqueta EI</field>
         <field name="model">sale.order</field> 
         <field name="report_type">qweb-pdf</field> <field name="report_name">wb_printer_IoT.report_zpl_backup</field> 
         <field name="report_file">wb_printer_IoT.report_zpl_backup</field>
