@@ -69,6 +69,7 @@ class IrActionsReport(models.Model):
             # Variables generales de la SO
             so_name = order.name or ''
             marketplace = order.channel if order.channel else 'Sin marketplace'
+            team_name = order.team_id.name if order.team_id else "Sin equipo de ventas"
             create_date = order.date_order.strftime('%Y-%m-%d') if order.date_order else ''
             
             # El campo nuevo del carrier
@@ -142,56 +143,57 @@ class IrActionsReport(models.Model):
                                     ^FO50,290^FDFecha de orden: {create_date}^FS
                                     ^FO50,350^FDMarketplace: {marketplace}^FS
                                     ^FO50,410^FDCarrier: {carrier}^FS
-                                    ^FO50,480^GB700,4,4^FS
+                                    ^FO50,470^FDEquipo de ventas: {team_name}^FS
+                                    ^FO50,540^GB700,4,4^FS
 
                                     ^FX --- BLOQUE 2: DATOS DEL SKU Y CAJA ---
                                     ^CFA,40
-                                    ^FO50,530^FDSKU: {sku}^FS
+                                    ^FO50,590^FDSKU: {sku}^FS
                                     ^CFA,30
-                                    ^FO50,600^FB700,2,0,L,0^FDProd: {product_name}^FS
+                                    ^FO50,660^FB700,2,0,L,0^FDProd: {product_name}^FS
 
                                     ^FX --- TABLA DE DIMENSIONES (Cuadricula de 4 celdas) ---
-                                    ^FO50,670^GB700,90,3^FS
-                                    ^FO50,715^GB700,0,3^FS
-                                    ^FO225,670^GB0,90,3^FS
-                                    ^FO400,670^GB0,90,3^FS
-                                    ^FO575,670^GB0,90,3^FS
+                                    ^FO50,730^GB700,90,3^FS
+                                    ^FO50,775^GB700,0,3^FS
+                                    ^FO225,730^GB0,90,3^FS
+                                    ^FO400,730^GB0,90,3^FS
+                                    ^FO575,730^GB0,90,3^FS
 
                                     ^CF0,25
-                                    ^FO50,685^FB175,1,0,C^FDLargo^FS
-                                    ^FO225,685^FB175,1,0,C^FDAncho^FS
-                                    ^FO400,685^FB175,1,0,C^FDAlto^FS
-                                    ^FO575,685^FB175,1,0,C^FDPeso^FS
+                                    ^FO50,745^FB175,1,0,C^FDLargo^FS
+                                    ^FO225,745^FB175,1,0,C^FDAncho^FS
+                                    ^FO400,745^FB175,1,0,C^FDAlto^FS
+                                    ^FO575,745^FB175,1,0,C^FDPeso^FS
 
                                     ^CF0,30
-                                    ^FO50,730^FB175,1,0,C^FD{p_length} cm^FS
-                                    ^FO225,730^FB175,1,0,C^FD{p_width} cm^FS
-                                    ^FO400,730^FB175,1,0,C^FD{p_height} cm^FS
-                                    ^FO575,730^FB175,1,0,C^FD{p_weight} kg^FS
+                                    ^FO50,790^FB175,1,0,C^FD{p_length} cm^FS
+                                    ^FO225,790^FB175,1,0,C^FD{p_width} cm^FS
+                                    ^FO400,790^FB175,1,0,C^FD{p_height} cm^FS
+                                    ^FO575,790^FB175,1,0,C^FD{p_weight} kg^FS
 
-                                    ^FO50,790^GB700,4,4^FS
+                                    ^FO50,850^GB700,4,4^FS
 
                                     ^FX --- BLOQUE 3: TRASLADO Y GUIA ---
                                     ^CFA,40
-                                    ^FO50,830^FDPICK: {picking.name}^FS
+                                    ^FO50,890^FDPICK: {picking.name}^FS
                                     ^CFA,50
-                                    ^FO50,910^FDEI: {display_name}^FS
-                                    ^FO50,990^GB700,4,4^FS
+                                    ^FO50,970^FDEI: {display_name}^FS
+                                    ^FO50,1050^GB700,4,4^FS
 
                                     ^FX --- BLOQUE 4: CODIGO DE BARRAS EN RECUADRO ---
                                     ^FX Caja exterior (Ancho 700, Alto 310, Grosor 4)
-                                    ^FO50,1030^GB700,310,4^FS
+                                    ^FO50,1090^GB700,310,4^FS
 
                                     ^FX Configurar el tamaño del codigo de barras (Ancho=4, Proporcion=2, Alto=250)
                                     ^BY5,2,250
 
                                     ^FX 3. Posicionamos el codigo de barras dentro de la caja con margenes
                                     ^FX (La caja empieza en X=50, Y=1030. Ponemos el codigo en X=100, Y=1060)
-                                    ^FO100,1060^BCN,250,N,N,N^FD{display_name}^FS
+                                    ^FO100,1130^BCN,250,N,N,N^FD{display_name}^FS
 
                                     ^FX --- BLOQUE 5: CONTADOR ---
                                     ^CF0,50
-                                    ^FO50,1450^FDEtiqueta {current_label_idx} de {total_labels}^FS
+                                    ^FO50,1510^FDEtiqueta {current_label_idx} de {total_labels}^FS
                                     ^XZ
                                     """
                     full_zpl_code += zpl_code
@@ -227,7 +229,7 @@ class IrActionsReport(models.Model):
             order_id = res_ids[0]
             order = self.env['sale.order'].browse(order_id)
             marketplace = order.channel if order.channel else 'Sin marketplace'
-            team_name = order.team_id.name if order.team_id else "Sin Equipo"
+            team_name = order.team_id.name if order.team_id else "Sin equipo de ventas"
             if not order.exists():
                 raise UserError("No se encontró la Orden de Venta.")
 
