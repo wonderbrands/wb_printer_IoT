@@ -178,9 +178,16 @@ class IrActionsReport(models.Model):
                                     ^FO50,910^FDEI: {display_name}^FS
                                     ^FO50,990^GB700,4,4^FS
 
-                                    ^FX --- BLOQUE 4: CODIGO DE BARRAS ---
-                                    ^BY6,2,300
-                                    ^FO30,1050^BCN,300,N,N,N^FD{display_name}^FS
+                                    ^FX --- BLOQUE 4: CODIGO DE BARRAS EN RECUADRO ---
+                                    ^FX Caja exterior (Ancho 700, Alto 310, Grosor 4)
+                                    ^FO50,1030^GB700,310,4^FS
+
+                                    ^FX Configurar el tamaño del codigo de barras (Ancho=4, Proporcion=2, Alto=250)
+                                    ^BY5,2,250
+
+                                    ^FX 3. Posicionamos el codigo de barras dentro de la caja con margenes
+                                    ^FX (La caja empieza en X=50, Y=1030. Ponemos el codigo en X=100, Y=1060)
+                                    ^FO100,1060^BCN,250,N,N,N^FD{display_name}^FS
 
                                     ^FX --- BLOQUE 5: CONTADOR ---
                                     ^CF0,50
