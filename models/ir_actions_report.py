@@ -72,6 +72,12 @@ class IrActionsReport(models.Model):
             team_name = order.team_id.name if order.team_id else "Sin equipo de ventas"
             create_date = order.date_order.strftime('%Y-%m-%d') if order.date_order else ''
             
+            #Bloqueo de impresión para Mayoreo
+            # ---------------------------------------------------------
+            if 'mayoreo' in team_name.lower():
+                raise UserError(f"Venta de mayoreo ({so_name}), no genera Etiqueta Interna (EI).")
+            # ---------------------------------------------------------
+            
             # El campo nuevo del carrier
             carrier = order.data_carrier_selection_relational.name if order.data_carrier_selection_relational else 'Sin carrier'
             
@@ -182,7 +188,7 @@ class IrActionsReport(models.Model):
 
                                     ^FX --- BLOQUE 4: CODIGO DE BARRAS EN RECUADRO ---
                                     ^FX Caja exterior (Ancho 700, Alto 310, Grosor 4)
-                                    ^FO50,1090^GB700,310,4^FS
+                                    ^FO50,1090^GB700,325,4^FS
 
                                     ^FX Configurar el tamaño del codigo de barras (Ancho=4, Proporcion=2, Alto=250)
                                     ^BY5,2,250
