@@ -191,7 +191,7 @@ class IrActionsReport(models.Model):
                                     ^FO50,1090^GB700,325,4^FS
 
                                     ^FX Configurar el tamaño del codigo de barras (Ancho=4, Proporcion=2, Alto=250)
-                                    ^BY5,2,250
+                                    ^BY3,2,250
 
                                     ^FX 3. Posicionamos el codigo de barras dentro de la caja con margenes
                                     ^FX (La caja empieza en X=50, Y=1030. Ponemos el codigo en X=100, Y=1060)
