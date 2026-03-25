@@ -266,7 +266,7 @@ class IrActionsReport(models.Model):
             # --- DECISIÓN DE FORMATO ---
             # Caso 1: Todo es ZPL (ideal)
             if combined_zpl and not pdf_list:
-                picking.barcode_printed = True
+                picking.data_barcode_printed = True
                 return combined_zpl, 'text'
 
             # Caso 2: Hay PDFs de guías + ZPL de etiquetas
@@ -279,13 +279,13 @@ class IrActionsReport(models.Model):
                     "Las guías PDF requieren impresión separada.",
                     order.name, len(pdf_list)
                 )
-                picking.barcode_printed = True
+                picking.data_barcode_printed = True
                 return combined_zpl, 'text'
 
             # Caso 3: Solo PDFs de guías (sin ZPL de etiquetas ni guías ZPL)
             if pdf_list and not combined_zpl:
                 merged_pdf = merge_pdf(pdf_list) if len(pdf_list) > 1 else pdf_list[0]
-                picking.barcode_printed = True
+                picking.data_barcode_printed = True
                 return merged_pdf, 'pdf'
 
             # Caso 4: No hay nada que imprimir
@@ -296,7 +296,7 @@ class IrActionsReport(models.Model):
 
             # Fallback: solo etiqueta ZPL (no debería llegar aquí, pero por seguridad)
             if etiqueta_zpl:
-                picking.barcode_printed = True
+                picking.data_barcode_printed = True
                 return etiqueta_zpl.encode('utf-8'), 'text'
 
             raise UserError(f"No se pudo generar ningún contenido para imprimir ({order.name}).")
