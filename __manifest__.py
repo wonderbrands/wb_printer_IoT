@@ -9,6 +9,7 @@
         'views/report_paperformats.xml',
         'views/report_actions.xml',
         'views/report_label_template.xml',
+        'views/report_combinated.xml',
     ],
     'installable': True,
     'application': False,
