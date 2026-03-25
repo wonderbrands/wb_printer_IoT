@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 class IrActionsReport(models.Model):
     _inherit = 'ir.actions.report'
 
+    # Logo GFA compartido entre reportes ZPL
     _ZPL_LOGO_GFA = (
         "^FO185,55\n"
         "^GFA,6000,6000,75,"
@@ -21,24 +22,18 @@ class IrActionsReport(models.Model):
     def _build_zpl_etiqueta(self, order, picking_for_label=None):
         """
         Genera el ZPL de etiquetas internas (4x8) para una Orden de Venta.
-        Reutilizado por report_zpl_backup y report_combined_pack_validate.
-        
-        :param order: sale.order record
-        :param picking_for_label: stock.picking a usar. Si no se pasa, lo busca.
-        :returns: str con todo el ZPL generado
+        Reutilizado por report_zpl_backup.
         """
         so_name = order.name or ''
         marketplace = order.channel if order.channel else 'Sin marketplace'
         team_name = order.team_id.name if order.team_id else "Sin equipo de ventas"
         create_date = order.date_order.strftime('%Y-%m-%d') if order.date_order else ''
 
-        #Bloqueo de impresión para Mayoreo
         if 'mayoreo' in team_name.lower():
             raise UserError(f"Venta de mayoreo ({so_name}), no genera Etiqueta Interna (EI).")
 
         carrier = order.data_carrier_selection_relational.name if order.data_carrier_selection_relational else 'Sin carrier'
 
-        # Buscar el PICK asociado
         picking = picking_for_label
         if not picking:
             picking = self.env['stock.picking'].search([
@@ -52,7 +47,6 @@ class IrActionsReport(models.Model):
             raise UserError(f"No se encontró un movimiento de inventario (PICK) para la orden {so_name}.")
 
         moves = picking.move_ids
-
         total_labels = 0
         for m in moves:
             qty = m.quantity if m.quantity > 0 else m.product_uom_qty
@@ -211,97 +205,6 @@ class IrActionsReport(models.Model):
             return full_zpl_code.encode('utf-8'), 'text'
 
         # ---------------------------------------------------------
-        # COMBINADO: Guías adjuntas + Etiqueta ZPL
-        # Se dispara desde el botón VALIDAR en barcode (PACK)
-        # Recibe stock.picking IDs
-        # ---------------------------------------------------------
-        elif report.report_name == 'wb_printer_IoT.report_combined_pack_validate':
-            if not res_ids:
-                raise UserError("No se ha seleccionado ningún movimiento.")
-
-            picking = self.env['stock.picking'].browse(res_ids[0])
-            if not picking.exists():
-                raise UserError("No se encontró el movimiento de inventario.")
-
-            order = picking.sale_id
-            if not order:
-                raise UserError(f"El movimiento {picking.name} no tiene Orden de Venta asociada.")
-
-            combined_zpl = b''
-            pdf_list = []
-
-            # --- PARTE 1: Guías adjuntas (misma lógica que report_attachment_dummy) ---
-            so_attachments = self.env['sale.order.attachment'].search([
-                ('so_id', '=', order.id)
-            ])
-
-            guias_found = False
-            if so_attachments:
-                for attach in so_attachments:
-                    if not attach.attachment:
-                        continue
-                    raw_content = base64.b64decode(attach.attachment)
-                    file_name = attach.file_name or ''
-                    if file_name.lower().endswith(('.txt', '.zpl')):
-                        combined_zpl += raw_content
-                        guias_found = True
-                    else:
-                        pdf_list.append(raw_content)
-                        guias_found = True
-
-            # --- PARTE 2: Etiqueta ZPL interna (misma lógica que report_zpl_backup) ---
-            etiqueta_zpl = ""
-            try:
-                etiqueta_zpl = self._build_zpl_etiqueta(order)
-            except UserError:
-                # Si es mayoreo o no tiene PICK, solo imprimimos las guías
-                _logger.warning(
-                    "Combinado: No se pudo generar etiqueta ZPL para %s, solo guías.",
-                    order.name
-                )
-
-            if etiqueta_zpl:
-                combined_zpl += etiqueta_zpl.encode('utf-8')
-
-            # --- DECISIÓN DE FORMATO ---
-            # Caso 1: Todo es ZPL (ideal)
-            if combined_zpl and not pdf_list:
-                picking.data_barcode_printed = True
-                return combined_zpl, 'text'
-
-            # Caso 2: Hay PDFs de guías + ZPL de etiquetas
-            # Priorizamos ZPL ya que la impresora es ZPL.
-            # Los PDFs de guías se loguean como advertencia.
-            if combined_zpl and pdf_list:
-                _logger.warning(
-                    "Combinado %s: Se encontraron %d guías en PDF que no se pueden "
-                    "combinar con el ZPL. Solo se envían las guías ZPL + etiquetas ZPL. "
-                    "Las guías PDF requieren impresión separada.",
-                    order.name, len(pdf_list)
-                )
-                picking.data_barcode_printed = True
-                return combined_zpl, 'text'
-
-            # Caso 3: Solo PDFs de guías (sin ZPL de etiquetas ni guías ZPL)
-            if pdf_list and not combined_zpl:
-                merged_pdf = merge_pdf(pdf_list) if len(pdf_list) > 1 else pdf_list[0]
-                picking.data_barcode_printed = True
-                return merged_pdf, 'pdf'
-
-            # Caso 4: No hay nada que imprimir
-            if not guias_found and not etiqueta_zpl:
-                raise UserError(
-                    f"No hay guías adjuntas ni datos para etiqueta interna en la orden {order.name}."
-                )
-
-            # Fallback: solo etiqueta ZPL (no debería llegar aquí, pero por seguridad)
-            if etiqueta_zpl:
-                picking.data_barcode_printed = True
-                return etiqueta_zpl.encode('utf-8'), 'text'
-
-            raise UserError(f"No se pudo generar ningún contenido para imprimir ({order.name}).")
-
-        # ---------------------------------------------------------
         # Etiquetas 2x1 
         # ---------------------------------------------------------
         elif report.report_name == 'wb_printer_IoT.report_custom_2x1':
@@ -323,8 +226,10 @@ class IrActionsReport(models.Model):
             
             if so_attachments:
                 len_so_attachments = len(so_attachments)
-                for attach in so_attachments:
-                    display_name = attach.display_name_custom or f"{order.name}/{attach.sequence_number}"
+                for idx, attach in enumerate(so_attachments, start=1):
+                    # display_name_custom y sequence_number están comentados en el modelo,
+                    # usamos file_name o un índice como fallback
+                    display_name = attach.file_name or f"{order.name}/{idx}"
                     
                     zpl_code = f"""^XA
                                 ^PW400
