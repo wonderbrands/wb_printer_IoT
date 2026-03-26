@@ -38,7 +38,8 @@ class IrActionsReport(models.Model):
         if not picking:
             picking = self.env['stock.picking'].search([
                 ('sale_id', '=', order.id),
-                ('name', 'ilike', 'PICK')
+                ('name', 'ilike', 'PICK'),
+                ('state', '!=', 'cancel')
             ], limit=1)
             if not picking:
                 picking = self.env['stock.picking'].search([('sale_id', '=', order.id)], limit=1)
