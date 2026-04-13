@@ -32,8 +32,12 @@ class PrintReasonWizard(models.TransientModel):
             message_type='comment',
             subtype_xmlid='mail.mt_note',
         )
+
         # Disparar el reporte correspondiente
         if self.report_type == 'attachment_4x8':
-            return self.env.ref('wb_printer_IoT.action_report_print_attachment_4x8').report_action(order)
+            action = self.env.ref('wb_printer_IoT.action_report_print_attachment_4x8').report_action(order)
         else:
-            return self.env.ref('wb_printer_IoT.action_report_zpl_backup').report_action(order)
+            action = self.env.ref('wb_printer_IoT.action_report_zpl_backup').report_action(order)
+
+        action['close_on_report_download'] = True
+        return action
