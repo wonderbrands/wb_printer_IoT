@@ -7,6 +7,7 @@
     'depends': ['base', 'stock', 'stock_barcode', 'iot', 'sale', 'mail'],
     'data': [
         'security/ir.model.access.csv',
+        'security/security_groups.xml',
         'views/report_paperformats.xml',
         'views/report_actions.xml',
         'views/report_label_template.xml',

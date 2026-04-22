@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="module_category_printer_iot" model="ir.module.category">
+        <field name="name">Impresión de Etiquetas</field>
+        <field name="description">Permisos relacionados con la impresión de etiquetas y guías</field>
+        <field name="sequence">50</field>
+    </record>
+
+    <record id="group_print_labels" model="res.groups">
+        <field name="name">Imprimir Etiquetas (Guía 4x8 / EI)</field>
+        <field name="category_id" ref="wb_printer_IoT.module_category_printer_iot"/>
+        <field name="comment">Permite al usuario imprimir Guía Adjunta 4x8 y Etiqueta EI desde las órdenes de venta.</field>
+    </record>
+
+</odoo>

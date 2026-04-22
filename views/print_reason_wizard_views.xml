@@ -10,7 +10,14 @@
                 <group>
                     <field name="sale_order_id" readonly="1" force_save="1"/>
                     <field name="report_type" readonly="1" force_save="1"/>
-                    <field name="print_reason" placeholder="Ej: Etiqueta dañada, cliente solicitó reenvío, etc."/>
+                    <field name="print_reason_selection"
+                           widget="radio"
+                           options="{'horizontal': false}"
+                           required="1"/>
+                    <field name="print_reason_text"
+                           placeholder="Describe el motivo de la reimpresión (mínimo 10 caracteres)..."
+                           invisible="print_reason_selection != 'otro'"
+                           required="print_reason_selection == 'otro'"/>
                 </group>
                 <footer>
                     <button name="action_print" string="Imprimir" type="object" class="btn-primary"/>
@@ -20,25 +27,29 @@
         </field>
     </record>
 
-    <!-- Server Action: Guía Adjunta 4x8 (abre wizard) -->
+    <!-- Server Action: Guía Adjunta 4x8 (abre wizard con validación de grupo) -->
     <record id="action_open_wizard_attachment_4x8" model="ir.actions.server">
         <field name="name">Data - Imprimir Guía Adjunta 4x8</field>
         <field name="model_id" ref="sale.model_sale_order"/>
         <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
         <field name="state">code</field>
-        <field name="code">wizard = env['sale.order.print.reason.wizard'].create({'sale_order_id': record.id, 'report_type': 'attachment_4x8'})
+        <field name="code">if not env.user.has_group('wb_printer_IoT.group_print_labels'):
+    raise UserError("No tienes permiso para realizar esta acción, solicita a mesa de control.")
+wizard = env['sale.order.print.reason.wizard'].create({'sale_order_id': record.id, 'report_type': 'attachment_4x8'})
 action = {'name': 'Motivo de Reimpresión - Guía Adjunta 4x8', 'type': 'ir.actions.act_window', 'res_model': 'sale.order.print.reason.wizard', 'res_id': wizard.id, 'view_mode': 'form', 'target': 'new'}</field>
     </record>
 
-    <!-- Server Action: Etiqueta EI (abre wizard) -->
+    <!-- Server Action: Etiqueta EI (abre wizard con validación de grupo) -->
     <record id="action_open_wizard_etiqueta_ei" model="ir.actions.server">
         <field name="name">Data - Imprimir Etiqueta EI</field>
         <field name="model_id" ref="sale.model_sale_order"/>
         <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
         <field name="state">code</field>
-        <field name="code">wizard = env['sale.order.print.reason.wizard'].create({'sale_order_id': record.id, 'report_type': 'etiqueta_ei'})
+        <field name="code">if not env.user.has_group('wb_printer_IoT.group_print_labels'):
+    raise UserError("No tienes permiso para realizar esta acción, solicita a mesa de control.")
+wizard = env['sale.order.print.reason.wizard'].create({'sale_order_id': record.id, 'report_type': 'etiqueta_ei'})
 action = {'name': 'Motivo de Reimpresión - Etiqueta EI', 'type': 'ir.actions.act_window', 'res_model': 'sale.order.print.reason.wizard', 'res_id': wizard.id, 'view_mode': 'form', 'target': 'new'}</field>
     </record>
 
