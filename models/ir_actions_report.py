@@ -323,9 +323,40 @@ class IrActionsReport(models.Model):
                 file_name = (attach.file_name or '').lower()
                 
                 if file_name.endswith(('.txt', '.zpl')):
-                    # Ya es ZPL/texto, pasar directo
-                    all_zpl_parts.append(raw_content.decode('utf-8', errors='replace'))
-                    _logger.info("Adjunto ZPL/texto incluido directamente: %s", attach.file_name)
+                    zpl_text = raw_content.decode('utf-8', errors='replace')
+                    try:
+                        #Labelary API
+                        labelary_url = "http://api.labelary.com/v1/printers/8dpmm/labels/4x8/"
+                        
+                        #PDF multipágina
+                        headers = {
+                            'Accept': 'application/pdf'
+                        }
+                        #Aumentamos un poco el timeout a 10s por si vienen muchísimas guías juntas
+                        response = requests.post(labelary_url, headers=headers, data=zpl_text.encode('utf-8'), timeout=10)
+                        
+                        if response.status_code == 200:
+                            _logger.info("Labelary devolvió el PDF multipágina. Convirtiendo a ZPL ^GFA...")
+                            
+                            zpl_from_pdf = self._convert_pdf_to_zpl(
+                                response.content,  # Los bytes del PDF devuelto
+                                dpi=203,
+                                width_dots=812,
+                                height_dots=1624
+                            )
+                            all_zpl_parts.append(zpl_from_pdf)
+                            
+                        else:
+                            #Fallback 1: Si Labelary responde con error
+                            _logger.warning("Labelary devolvió HTTP %s. Enviando ZPL crudo como fallback.", response.status_code)
+                            zpl_text_fallback = zpl_text.replace('^XA', '^XA\n^PW812\n^LL1624')
+                            all_zpl_parts.append(zpl_text_fallback)
+                            
+                    except Exception as e:
+                        #Fallback 2: Si no hay internet o Labelary se cae
+                        _logger.error("Error conectando a Labelary: %s. Enviando ZPL crudo como fallback.", e)
+                        zpl_text_fallback = zpl_text.replace('^XA', '^XA\n^PW812\n^LL1624')
+                        all_zpl_parts.append(zpl_text_fallback)
                 else:
                     # Es PDF → convertir a ZPL ^GFA en el servidor
                     _logger.info("Convirtiendo PDF adjunto a ZPL: %s", attach.file_name)
