@@ -179,13 +179,32 @@ class IrActionsReport(models.Model):
 
         picking = picking_for_label
         if not picking:
-            picking = self.env['stock.picking'].search([
+            pick_domain = [
                 ('sale_id', '=', order.id),
-                ('name', 'ilike', 'PICK'),
-                ('state', '!=', 'cancel')
-            ], limit=1)
+                '|', ('picking_type_id.sequence_code', '=', 'PICK'), ('name', 'ilike', 'PICK'),
+            ]
+            # Prioridad 1: PICK efectivamente finalizado ('done')
+            picking = self.env['stock.picking'].search(
+                pick_domain + [('state', '=', 'done')],
+                order='date_done desc, id desc',
+                limit=1
+            )
             if not picking:
-                picking = self.env['stock.picking'].search([('sale_id', '=', order.id)], limit=1)
+                picking = self.env['stock.picking'].search(
+                    pick_domain + [('state', 'not in', ('cancel', 'draft'))],
+                    order='id desc',
+                    limit=1
+                )
+            if not picking:
+                picking = self.env['stock.picking'].search([
+                    ('sale_id', '=', order.id),
+                    ('state', '=', 'done')
+                ], order='date_done desc, id desc', limit=1)
+            if not picking:
+                picking = self.env['stock.picking'].search([
+                    ('sale_id', '=', order.id),
+                    ('state', 'not in', ('cancel', 'draft'))
+                ], order='id desc', limit=1)
 
         if not picking:
             raise UserError(f"No se encontró un movimiento de inventario (PICK) para la orden {so_name}.")
